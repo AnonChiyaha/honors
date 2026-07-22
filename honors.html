@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>个人荣誉成就</title>
+<title>丁天一 · 个人荣誉成就</title>
 <style>
   :root {
     --bg: #f8f9fa;
@@ -26,8 +26,7 @@
     line-height: 1.6;
     min-height: 100vh;
   }
-  
-  /* ── Hero ── */
+
   .hero {
     text-align: center;
     padding: 60px 20px 40px;
@@ -42,12 +41,8 @@
     background-clip: text;
     margin-bottom: 8px;
   }
-  .hero .subtitle {
-    color: var(--muted);
-    font-size: 1.05rem;
-  }
+  .hero .subtitle { color: var(--muted); font-size: 1.05rem; }
 
-  /* ── Stats ── */
   .stats {
     display: flex;
     justify-content: center;
@@ -56,96 +51,53 @@
     padding: 20px 20px 50px;
   }
   .stat { text-align: center; }
-  .stat .num {
-    font-size: 2.2rem;
-    font-weight: 800;
-    color: var(--accent);
-  }
+  .stat .num { font-size: 2.2rem; font-weight: 800; color: var(--accent); }
   .stat .label { color: var(--muted); font-size: 0.85rem; }
 
-  /* ── Sections ── */
   .container { max-width: 800px; margin: 0 auto; padding: 0 20px 60px; }
   .section { margin-bottom: 50px; }
   .section-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: 24px;
-    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.4rem; font-weight: 700; margin-bottom: 24px;
   }
-  .section-title .icon { font-size: 1.5rem; }
 
-  /* ── Cards ── */
   .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 24px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
     margin-bottom: 14px;
     transition: border-color 0.2s, transform 0.2s;
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
-  .card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
+
   .card .badge {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    display: inline-block; font-size: 0.72rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.5px;
   }
   .badge-gold  { background: #fef3c7; color: #92400e; }
   .badge-blue  { background: #dbeafe; color: #1e40af; }
   .badge-green { background: #d1fae5; color: #065f46; }
   .badge-red   { background: #fee2e2; color: #991b1b; }
-  
-  .card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 4px;
-  }
-  .card .meta {
-    color: var(--muted);
-    font-size: 0.85rem;
-    margin-bottom: 6px;
-  }
-  .card p {
-    color: var(--muted);
-    font-size: 0.92rem;
-  }
+  .badge-purple{ background: #ede9fe; color: #6b21a8; }
 
-  /* ── Highlight ribbon ── */
+  .card h3 { font-size: 1.1rem; margin-bottom: 4px; }
+  .card .meta { color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 0.92rem; }
+
   .card.featured::before {
-    content: "TOP";
-    position: absolute;
-    top: 12px;
-    right: -28px;
-    background: var(--accent);
-    color: var(--bg);
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 2px 36px;
-    transform: rotate(45deg);
-    letter-spacing: 1px;
+    content: "TOP"; position: absolute; top: 12px; right: -28px;
+    background: var(--accent); color: #fff;
+    font-size: 0.65rem; font-weight: 800; padding: 2px 36px;
+    transform: rotate(45deg); letter-spacing: 1px;
   }
 
-  /* ── Footer ── */
   footer {
-    text-align: center;
-    padding: 30px;
-    color: var(--muted);
-    font-size: 0.8rem;
+    text-align: center; padding: 30px;
+    color: var(--muted); font-size: 0.8rem;
     border-top: 1px solid var(--border);
   }
 
-  /* ── Responsive ── */
   @media (max-width: 600px) {
     .stats { gap: 24px; }
     .stat .num { font-size: 1.6rem; }
@@ -157,96 +109,219 @@
 </head>
 <body>
 
-<!-- ═══════════ HERO ═══════════ -->
 <div class="hero">
-  <h1>🏆 荣誉成就</h1>
-  <div class="subtitle">记录成长的每一步</div>
+  <h1>🏆 个人荣誉成就</h1>
+  <div class="subtitle">丁天一 · 中南大学 · 机械设计制造及其自动化</div>
 </div>
 
 <div class="stats">
-  <div class="stat"><div class="num">—</div><div class="label">学术奖项</div></div>
-  <div class="stat"><div class="num">—</div><div class="label">职业成就</div></div>
-  <div class="stat"><div class="num">—</div><div class="label">资格证书</div></div>
+  <div class="stat"><div class="num">3</div><div class="label">国家级奖项</div></div>
+  <div class="stat"><div class="num">1</div><div class="label">市级志愿证书</div></div>
+  <div class="stat"><div class="num">2</div><div class="label">实习/科研项目</div></div>
+  <div class="stat"><div class="num">专业第1</div><div class="label">学业排名</div></div>
 </div>
 
-<!-- ═══════════ MAIN ═══════════ -->
 <div class="container">
 
-  <!-- ── 学术成就 ── -->
+  <!-- ═══════════ 学术竞赛 ═══════════ -->
   <div class="section">
-    <div class="section-title"><span class="icon">🎓</span> 学术成就</div>
+    <div class="section-title"><span class="icon">🎓</span> 学术竞赛</div>
 
-    <!-- 模板：复制下面这个 card 块来添加新条目 -->
     <div class="card featured">
-      <span class="badge badge-gold">一等奖</span>
-      <h3>示例：全国大学生数学建模竞赛</h3>
-      <div class="meta">2024年9月 · 国家级</div>
-      <p>负责模型构建与算法实现，队伍获全国一等奖（前1%）。</p>
+      <span class="badge badge-gold">国家二等奖</span>
+      <h3>全国大学生英语竞赛（NECCS）</h3>
+      <div class="meta">2026年 · C类 · 国家级</div>
+      <p>获全国二等奖，高等学校大学外语教学研究会 &amp; 全国英语竞赛组委会联合颁发。</p>
     </div>
 
     <div class="card">
-      <span class="badge badge-blue">奖学金</span>
-      <h3>示例：国家奖学金</h3>
-      <div class="meta">2023-2024学年</div>
-      <p>综合成绩排名专业第一。</p>
+      <span class="badge badge-blue">S奖</span>
+      <h3>美国大学生数学建模竞赛（MCM/ICM）</h3>
+      <div class="meta">2026年 · 跨学科建模竞赛（ICM）</div>
+      <p>团队合作完成建模论文，获 Successful Participant（S奖）。COMAP、AMS、SIAM 等联合主办。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">国家二等奖</span>
+      <h3>第三届全国青少年科技教育成果展示大赛</h3>
+      <div class="meta">高中组 · 国家级</div>
+      <p>高中阶段参加科技教育成果展示获国家二等奖。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">校三等奖</span>
+      <h3>「爱我国防」主题演讲比赛</h3>
+      <div class="meta">校级 · 通过初赛</div>
+      <p>参加全国国防演讲比赛，通过初赛，获校赛三等奖。</p>
     </div>
 
   </div>
 
-  <!-- ── 职业成就 ── -->
+  <!-- ═══════════ 实习与科研 ═══════════ -->
   <div class="section">
-    <div class="section-title"><span class="icon">💼</span> 职业成就</div>
+    <div class="section-title"><span class="icon">💼</span> 实习与科研</div>
+
+    <div class="card featured">
+      <span class="badge badge-purple">实习</span>
+      <h3>中国商飞上海飞机设计研究院长沙分院</h3>
+      <div class="meta">2026年7月 — 至今 · 长沙</div>
+      <p>研究飞机起落架结构件，协助整理技术文档；学习民用飞机结构设计流程与适航条例；参与设计评审会并做会议记录，期间常与外国专家进行交流。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">科研</span>
+      <h3>电子信息学院智能机器人课题组</h3>
+      <div class="meta">2026年7月中旬 — 至今 · 副教授课题组</div>
+      <p>研究方向：智能机器人技术与智能车竞赛，目前参与六足机器人项目。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">项目</span>
+      <h3>风力发电机项目</h3>
+      <div class="meta">课程项目</div>
+      <p>设计并制作风叶叶片版本，撰写 Methodology 与 Conclusion，主持 Poster Presentation 并讲解结论。</p>
+    </div>
 
     <div class="card">
       <span class="badge badge-green">项目</span>
-      <h3>示例：主导 XX 系统架构升级</h3>
-      <div class="meta">2025年 · XX公司</div>
-      <p>将系统吞吐量提升3倍，故障恢复时间从30分钟降至30秒。</p>
+      <h3>土木造桥项目</h3>
+      <div class="meta">课程项目</div>
+      <p>从头到尾承担大量工作，贯穿设计、制作、测试全流程。</p>
     </div>
 
     <div class="card">
-      <span class="badge badge-blue">晋升</span>
-      <h3>示例：提前晋升高级工程师</h3>
-      <div class="meta">2025年6月</div>
-      <p>因连续两个季度绩效 S 级获得破格晋升。</p>
-    </div>
-
-  </div>
-
-  <!-- ── 资格证书 ── -->
-  <div class="section">
-    <div class="section-title"><span class="icon">📜</span> 资格与证书</div>
-
-    <div class="card">
-      <span class="badge badge-red">认证</span>
-      <h3>示例：AWS Solutions Architect Professional</h3>
-      <div class="meta">2024年 · 有效期至2027年</div>
-    </div>
-
-    <div class="card">
-      <span class="badge badge-green">语言</span>
-      <h3>示例：CET-6 / 雅思 7.0</h3>
-      <div class="meta">2023年</div>
+      <span class="badge badge-blue">项目</span>
+      <h3>无人机设计与3D打印</h3>
+      <div class="meta">个人项目</div>
+      <p>使用 Onshape 完成无人机3D建模，独立完成从设计、制造到3D打印的全流程。</p>
     </div>
 
   </div>
 
-  <!-- ── 个人项目 / 其他 ── -->
+  <!-- ═══════════ 荣誉表彰 ═══════════ -->
   <div class="section">
-    <div class="section-title"><span class="icon">🚀</span> 个人项目</div>
+    <div class="section-title"><span class="icon">🏅</span> 荣誉表彰</div>
+
+    <div class="card featured">
+      <span class="badge badge-gold">专业第一</span>
+      <h3>学业成绩专业排名第一</h3>
+      <div class="meta">中南大学 · 机械设计制造及其自动化</div>
+      <p>完成工程制图、力学、热力学等核心课程，具备扎实的机械工程理论基础。</p>
+    </div>
 
     <div class="card">
-      <span class="badge badge-green">开源</span>
-      <h3>示例：XX 开源工具</h3>
-      <div class="meta">GitHub 1.2k Stars</div>
-      <p>一个用于自动化多体动力学仿真的 Python 工具包。</p>
+      <span class="badge badge-blue">新生代表</span>
+      <h3>邓迪国际学院开学典礼纯英文发言</h3>
+      <div class="meta">2025年9月</div>
+      <p>作为新生代表在全院开学典礼上进行全英文发言，展现出色的英语口语与公众演讲能力。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">先进个人</span>
+      <h3>军训先进个人</h3>
+      <div class="meta">2025年8月 · 中南大学军训办颁发荣誉证书</div>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">执旗手</span>
+      <h3>军训执旗手</h3>
+      <div class="meta">2025年8月</div>
+      <p>在军训中担任方阵执旗手。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-red">优秀学员</span>
+      <h3>入党积极分子优秀学员</h3>
+      <div class="meta">中南大学</div>
+      <p>完成入党积极分子培训并获评优秀学员，获颁结业证书与荣誉证书。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">学生工作</span>
+      <h3>校报新媒体中心新闻部干事</h3>
+      <div class="meta">中南大学</div>
+      <p>负责新闻采写与推文撰写，擅长内容运营与文字表达。</p>
+    </div>
+
+  </div>
+
+  <!-- ═══════════ 志愿活动 ═══════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🤝</span> 志愿活动</div>
+
+    <div class="card featured">
+      <span class="badge badge-gold">市级证书</span>
+      <h3>「童童前行」关爱儿童公益活动 · 优秀志愿者</h3>
+      <div class="meta">2026年2月 · 长沙市青年志愿者服务中心颁发</div>
+      <p>获市级「优秀志愿者」称号与荣誉证书。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">志愿 3h</span>
+      <h3>毕业典礼志愿活动</h3>
+      <div class="meta">2025年 · 中南大学</div>
+      <p>参与2025届毕业典礼现场服务与保障工作，累计3小时。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">志愿 1.5h</span>
+      <h3>毕业晚会志愿活动</h3>
+      <div class="meta">中南大学</div>
+      <p>参与毕业晚会筹备及现场工作，累计1.5小时。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">社会实践</span>
+      <h3>「健康长江指挥中心」讲解实践</h3>
+      <div class="meta">大一寒假 · 泰州</div>
+      <p>在寒假期间赴「健康长江泰州行动」指挥中心担任讲解员，进行社会实践。</p>
+    </div>
+
+  </div>
+
+  <!-- ═══════════ 证书与技能 ═══════════ -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📜</span> 证书与技能</div>
+
+    <div class="card">
+      <span class="badge badge-blue">语言</span>
+      <h3>大学英语四级（CET-4）</h3>
+      <div class="meta">已通过</div>
+      <p>英语能力突出，具备流利的英文书面与口头交流能力，曾与外方专家无障碍沟通。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">计算机</span>
+      <h3>计算机二级证书（MS Office）</h3>
+      <div class="meta">已通过</div>
+      <p>熟练使用 Word、Excel 等办公软件。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-purple">技能</span>
+      <h3>工程软件与编程</h3>
+      <div class="meta">Onshape · AutoCAD · C++</div>
+      <p>熟练使用 Onshape 进行3D建模；自学 AutoCAD 与 C++，具备基础编程能力。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-red">多媒体</span>
+      <h3>视频剪辑与新媒体</h3>
+      <div class="meta">Premiere Pro · 剪映 · Canva</div>
+      <p>能用 Pr 和剪映进行视频剪辑与配音；熟练使用 Canva 制作新媒体内容。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">其他</span>
+      <h3>驾驶证（C1）</h3>
+      <div class="meta">已取得</div>
     </div>
 
   </div>
 
 </div>
 
-<footer>最后更新：2025年7月 · 持续记录中 ✨</footer>
+<footer>最后更新：2026年7月 · 中南大学 · 持续记录中 ✨</footer>
 
 </body>
 </html>
