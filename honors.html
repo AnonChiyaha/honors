@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个人荣誉成就</title>
+<style>
+  :root {
+    --bg: #f8f9fa;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --accent: #7c3aed;
+    --gold: #b8860b;
+    --green: #059669;
+    --blue: #2563eb;
+    --red: #dc2626;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 60px 20px 40px;
+    background: linear-gradient(180deg, #ede9fe 0%, var(--bg) 100%);
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .hero .subtitle {
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+
+  /* ── Stats ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    padding: 20px 20px 50px;
+  }
+  .stat { text-align: center; }
+  .stat .num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat .label { color: var(--muted); font-size: 0.85rem; }
+
+  /* ── Sections ── */
+  .container { max-width: 800px; margin: 0 auto; padding: 0 20px 60px; }
+  .section { margin-bottom: 50px; }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--text);
+  }
+  .section-title .icon { font-size: 1.5rem; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .card .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .badge-gold  { background: #fef3c7; color: #92400e; }
+  .badge-blue  { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-red   { background: #fee2e2; color: #991b1b; }
+  
+  .card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 4px;
+  }
+  .card .meta {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+  .card p {
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  /* ── Highlight ribbon ── */
+  .card.featured::before {
+    content: "TOP";
+    position: absolute;
+    top: 12px;
+    right: -28px;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 2px 36px;
+    transform: rotate(45deg);
+    letter-spacing: 1px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 30px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .stats { gap: 24px; }
+    .stat .num { font-size: 1.6rem; }
+    .hero { padding: 40px 16px 30px; }
+    .card { padding: 16px 18px; }
+    .card.featured::before { right: -32px; padding: 1px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ HERO ═══════════ -->
+<div class="hero">
+  <h1>🏆 荣誉成就</h1>
+  <div class="subtitle">记录成长的每一步</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num">—</div><div class="label">学术奖项</div></div>
+  <div class="stat"><div class="num">—</div><div class="label">职业成就</div></div>
+  <div class="stat"><div class="num">—</div><div class="label">资格证书</div></div>
+</div>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="container">
+
+  <!-- ── 学术成就 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🎓</span> 学术成就</div>
+
+    <!-- 模板：复制下面这个 card 块来添加新条目 -->
+    <div class="card featured">
+      <span class="badge badge-gold">一等奖</span>
+      <h3>示例：全国大学生数学建模竞赛</h3>
+      <div class="meta">2024年9月 · 国家级</div>
+      <p>负责模型构建与算法实现，队伍获全国一等奖（前1%）。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">奖学金</span>
+      <h3>示例：国家奖学金</h3>
+      <div class="meta">2023-2024学年</div>
+      <p>综合成绩排名专业第一。</p>
+    </div>
+
+  </div>
+
+  <!-- ── 职业成就 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">💼</span> 职业成就</div>
+
+    <div class="card">
+      <span class="badge badge-green">项目</span>
+      <h3>示例：主导 XX 系统架构升级</h3>
+      <div class="meta">2025年 · XX公司</div>
+      <p>将系统吞吐量提升3倍，故障恢复时间从30分钟降至30秒。</p>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-blue">晋升</span>
+      <h3>示例：提前晋升高级工程师</h3>
+      <div class="meta">2025年6月</div>
+      <p>因连续两个季度绩效 S 级获得破格晋升。</p>
+    </div>
+
+  </div>
+
+  <!-- ── 资格证书 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">📜</span> 资格与证书</div>
+
+    <div class="card">
+      <span class="badge badge-red">认证</span>
+      <h3>示例：AWS Solutions Architect Professional</h3>
+      <div class="meta">2024年 · 有效期至2027年</div>
+    </div>
+
+    <div class="card">
+      <span class="badge badge-green">语言</span>
+      <h3>示例：CET-6 / 雅思 7.0</h3>
+      <div class="meta">2023年</div>
+    </div>
+
+  </div>
+
+  <!-- ── 个人项目 / 其他 ── -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🚀</span> 个人项目</div>
+
+    <div class="card">
+      <span class="badge badge-green">开源</span>
+      <h3>示例：XX 开源工具</h3>
+      <div class="meta">GitHub 1.2k Stars</div>
+      <p>一个用于自动化多体动力学仿真的 Python 工具包。</p>
+    </div>
+
+  </div>
+
+</div>
+
+<footer>最后更新：2025年7月 · 持续记录中 ✨</footer>
+
+</body>
+</html>
