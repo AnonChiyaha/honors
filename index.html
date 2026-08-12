@@ -246,7 +246,7 @@
     <div class="card featured">
       <span class="badge badge-purple">实习</span>
       <h3>中国商飞上海飞机设计研究院长沙分院</h3>
-      <div class="meta">2026年7月2日 — 8月2日 · 长沙</div>
+      <div class="meta">2026年7月 — 至今 · 长沙</div>
       <p>研究飞机起落架结构件，协助整理技术文档；学习民用飞机结构设计流程与适航条例；参与设计评审会并做会议记录，期间常与外国专家进行交流。</p>
     </div>
 
@@ -583,13 +583,28 @@ function showUploadMsg(text, cls) {
 // ── Load gallery ──
 async function loadGallery() {
   const gallery = document.getElementById('gallery');
+  const token = sessionStorage.getItem('gh_token');
+  const headers = token ? { Authorization: `token ${token}` } : {};
+  
   try {
-    const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${IMAGE_DIR}`);
+    const resp = await fetch(
+      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${IMAGE_DIR}`,
+      { headers }
+    );
+    
     if (resp.status === 404) {
       gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>';
       return;
     }
-    if (!resp.ok) throw new Error('Failed');
+    if (resp.status === 403) {
+      // Rate limit — fall back to pre-cached image URLs or show login prompt
+      gallery.innerHTML = '<div class="gallery-empty">加载受限，点右下角 🔒 登录后即可显示图片。</div>';
+      return;
+    }
+    if (!resp.ok) {
+      gallery.innerHTML = '<div class="gallery-empty">加载失败（HTTP ' + resp.status + '），请稍后再试。</div>';
+      return;
+    }
 
     const files = await resp.json();
     if (!Array.isArray(files) || files.length === 0) {
@@ -608,7 +623,7 @@ async function loadGallery() {
       }).join('');
 
   } catch (e) {
-    gallery.innerHTML = '<div class="gallery-empty">加载建模图片失败，请稍后再试。</div>';
+    gallery.innerHTML = '<div class="gallery-empty">网络错误，请检查连接后刷新页面。</div>';
   }
 }
 
