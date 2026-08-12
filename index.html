@@ -579,7 +579,7 @@ async function fetchGalleryJSON(token) {
   const resp = await fetch(`${API_BASE}/contents/${GALLERY_JSON}`, { headers: h });
   if (!resp.ok) return [];
   const data = await resp.json();
-  return JSON.parse(atob(data.content));
+  return JSON.parse(decodeURIComponent(escape(atob(data.content))));
 }
 
 async function updateGalleryJSON(gallery, token, commitMsg) {
