@@ -173,6 +173,46 @@
     border-radius: 8px; margin-bottom: 12px; display: none;
   }
 
+  /* ── Admin tabs ── */
+  .modal-close {
+    position: absolute; top: 12px; right: 16px;
+    background: none; border: none; font-size: 1.6rem;
+    cursor: pointer; color: var(--muted); line-height: 1;
+    padding: 0; width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text); }
+  .admin-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .admin-tab {
+    padding: 6px 18px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; cursor: pointer; font-size: 0.88rem;
+    font-family: inherit; color: var(--muted);
+  }
+  .admin-tab.active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .admin-tab:hover { border-color: var(--accent); }
+
+  /* ── Manage list ── */
+  .manage-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .manage-item:last-child { border-bottom: none; }
+  .manage-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  .manage-item input {
+    flex: 1; padding: 6px 10px; border: 1px solid var(--border);
+    border-radius: 6px; font-size: 0.85rem; font-family: inherit; outline: none;
+  }
+  .manage-item input:focus { border-color: var(--accent); }
+  .manage-item .btn-sm {
+    padding: 4px 10px; border-radius: 6px; font-size: 0.78rem;
+    cursor: pointer; border: 1px solid var(--border);
+    font-family: inherit; background: transparent; color: var(--muted);
+    flex-shrink: 0;
+  }
+  .manage-item .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .manage-item .btn-sm.danger:hover { border-color: var(--red); color: var(--red); }
+
   footer {
     text-align: center; padding: 30px;
     color: var(--muted); font-size: 0.8rem;
@@ -418,94 +458,149 @@
 
 <!-- ═══════════ 管理后台弹窗 ═══════════ -->
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal" id="modal">
-    <!-- 登录界面 -->
-    <div id="loginPanel">
-      <h2>🔐 管理员验证</h2>
-      <label>GitHub Token（ghp_ 开头）</label>
-      <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-      <button class="btn btn-primary" onclick="adminLogin()">验证</button>
-      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
-      <div class="msg" id="loginMsg"></div>
+<div class="modal" id="modal">
+  <button class="modal-close" onclick="closeModal()" title="关闭">&times;</button>
+  <!-- 登录界面 -->
+  <div id="loginPanel">
+    <h2>🔐 管理员验证</h2>
+    <label>GitHub Token（ghp_ 开头）</label>
+    <input type="password" id="tokenInput" placeholder="«redacted:ghp_…»" autocomplete="off">
+    <button class="btn btn-primary" onclick="adminLogin()">验证</button>
+    <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+  <!-- 管理界面 -->
+  <div id="adminPanel" style="display:none;">
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('upload')">📷 上传</button>
+      <button class="admin-tab" onclick="switchAdminTab('manage')">📋 管理</button>
     </div>
-    <!-- 上传界面 -->
-    <div id="uploadPanel" style="display:none;">
-      <h2>📷 上传建模图片</h2>
+    <!-- 上传子面板 -->
+    <div id="subUpload">
       <label>选择图片</label>
       <input type="file" id="fileInput" accept="image/*" onchange="previewImage()">
       <img class="upload-preview" id="uploadPreview" alt="预览">
       <label>图片说明（可选）</label>
       <input type="text" id="captionInput" placeholder="例如：六足机器人 SolidWorks 模型">
       <button class="btn btn-primary" onclick="uploadImage()">上传</button>
-      <button class="btn btn-danger" onclick="adminLogout()">退出登录</button>
       <div class="msg" id="uploadMsg"></div>
     </div>
+    <!-- 管理子面板 -->
+    <div id="subManage" style="display:none;">
+      <div class="manage-list" id="manageList">加载中…</div>
+      <div class="msg" id="manageMsg"></div>
+    </div>
+    <button class="btn btn-danger" onclick="adminLogout()" style="margin-top:16px;">退出登录</button>
   </div>
+</div>
 </div>
 
 <script>
 const REPO_OWNER = 'AnonChiyaha';
 const REPO_NAME = 'honors';
 const IMAGE_DIR = 'images';
+const GALLERY_JSON = 'gallery.json';
+const RAW_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
+const API_BASE = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`;
 
-// ── Modal ──
+// ── DOM refs ──
 const overlay = document.getElementById('modalOverlay');
 const loginPanel = document.getElementById('loginPanel');
-const uploadPanel = document.getElementById('uploadPanel');
+const adminPanel = document.getElementById('adminPanel');
 const adminTrigger = document.getElementById('adminTrigger');
+const subUpload = document.getElementById('subUpload');
+const subManage = document.getElementById('subManage');
 
+function apiHeaders() {
+  const t = sessionStorage.getItem('gh_token');
+  return t ? { Authorization: `token ${t}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
+}
+
+// ── Modal ──
 adminTrigger.onclick = () => {
   const token = sessionStorage.getItem('gh_token');
   if (token) {
     loginPanel.style.display = 'none';
-    uploadPanel.style.display = 'block';
-    overlay.classList.add('active');
+    adminPanel.style.display = 'block';
   } else {
     loginPanel.style.display = 'block';
-    uploadPanel.style.display = 'none';
-    overlay.classList.add('active');
+    adminPanel.style.display = 'none';
     document.getElementById('tokenInput').focus();
   }
+  overlay.classList.add('active');
 };
 
 function closeModal() {
   overlay.classList.remove('active');
-  document.getElementById('loginMsg').textContent = '';
-  document.getElementById('uploadMsg').textContent = '';
+  ['loginMsg','uploadMsg','manageMsg'].forEach(id => { const e = document.getElementById(id); if(e) e.textContent = ''; });
 }
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
 
-overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+// ── Tabs ──
+function switchAdminTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  subUpload.style.display = tab === 'upload' ? 'block' : 'none';
+  subManage.style.display = tab === 'manage' ? 'block' : 'none';
+  if (tab === 'manage') loadManageList();
+}
 
 // ── Auth ──
 async function adminLogin() {
   const token = document.getElementById('tokenInput').value.trim();
   const msg = document.getElementById('loginMsg');
   if (!token.startsWith('ghp_')) { msg.className = 'msg msg-err'; msg.textContent = 'Token 格式错误，应以 ghp_ 开头'; return; }
-
   msg.textContent = '验证中…';
   try {
     const resp = await fetch('https://api.github.com/user', { headers: { Authorization: `token ${token}` } });
     if (!resp.ok) throw new Error('无效');
     const user = await resp.json();
     if (user.login !== REPO_OWNER) { msg.className = 'msg msg-err'; msg.textContent = '此 Token 不是该仓库的所有者'; return; }
-
     sessionStorage.setItem('gh_token', token);
     adminTrigger.classList.add('logged-in');
-    loadGallery();  // reload gallery with auth
+    loadGallery();
     msg.className = 'msg msg-ok'; msg.textContent = `✓ 欢迎，${user.login}`;
-    setTimeout(() => { loginPanel.style.display = 'none'; uploadPanel.style.display = 'block'; msg.textContent = ''; }, 800);
-  } catch {
-    msg.className = 'msg msg-err'; msg.textContent = 'Token 无效或网络错误';
-  }
+    setTimeout(() => { loginPanel.style.display = 'none'; adminPanel.style.display = 'block'; msg.textContent = ''; }, 600);
+  } catch { msg.className = 'msg msg-err'; msg.textContent = 'Token 无效或网络错误'; }
 }
 
 function adminLogout() {
   sessionStorage.removeItem('gh_token');
   adminTrigger.classList.remove('logged-in');
   loginPanel.style.display = 'block';
-  uploadPanel.style.display = 'none';
-  document.getElementById('uploadMsg').textContent = '';
+  adminPanel.style.display = 'none';
+  loadGallery();
   closeModal();
+}
+
+// ── helpers ──
+async function fetchGalleryJSON(token) {
+  const h = token ? { Authorization: `token ${token}` } : {};
+  const resp = await fetch(`${API_BASE}/contents/${GALLERY_JSON}`, { headers: h });
+  if (!resp.ok) return [];
+  const data = await resp.json();
+  return JSON.parse(atob(data.content));
+}
+
+async function updateGalleryJSON(gallery, token, commitMsg) {
+  // Read current SHA
+  const getResp = await fetch(`${API_BASE}/contents/${GALLERY_JSON}`, { headers: { Authorization: `token ${token}` } });
+  const getData = await getResp.json();
+  const sha = getData.sha;
+  
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(gallery, null, 2))));
+  const resp = await fetch(`${API_BASE}/contents/${GALLERY_JSON}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: commitMsg, content, sha, branch: 'main' })
+  });
+  return resp.ok;
+}
+
+function showMsg(elId, text, cls) {
+  const el = document.getElementById(elId);
+  el.textContent = text;
+  el.className = 'msg msg-' + cls;
 }
 
 // ── Image preview ──
@@ -523,116 +618,118 @@ function previewImage() {
 async function uploadImage() {
   const token = sessionStorage.getItem('gh_token');
   if (!token) { alert('请先登录'); return; }
-
   const fileInput = document.getElementById('fileInput');
   const file = fileInput.files[0];
-  if (!file) { showUploadMsg('请选择图片', 'err'); return; }
-  if (file.size > 5 * 1024 * 1024) { showUploadMsg('图片不能超过 5MB', 'err'); return; }
-
-  const caption = document.getElementById('captionInput').value.trim() || file.name.replace(/\.[^.]+$/, '');
-  showUploadMsg('上传中…', '');
+  if (!file) { showMsg('uploadMsg', '请选择图片', 'err'); return; }
+  if (file.size > 5*1024*1024) { showMsg('uploadMsg', '图片不能超过 5MB', 'err'); return; }
+  const caption = document.getElementById('captionInput').value.trim() || file.name.replace(/\.[^.]+$/,'');
+  showMsg('uploadMsg', '上传中…', '');
 
   try {
-    // Read file as base64
-    const base64 = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(file);
-    });
-
-    // Generate filename with timestamp to avoid collisions
+    const base64 = await new Promise(r => { const rd = new FileReader(); rd.onload = () => r(rd.result.split(',')[1]); rd.readAsDataURL(file); });
     const ext = file.name.split('.').pop() || 'png';
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2,6)}.${ext}`;
     const path = `${IMAGE_DIR}/${filename}`;
 
-    // Upload to GitHub
-    const resp = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    // Upload image
+    let resp = await fetch(`${API_BASE}/contents/${path}`, {
       method: 'PUT',
       headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: `上传建模图片：${caption}`, content: base64, branch: 'main' })
+      body: JSON.stringify({ message: `📷 ${caption}`, content: base64, branch: 'main' })
     });
+    if (!resp.ok) { const e = await resp.json(); showMsg('uploadMsg','上传失败: '+(e.message||resp.status),'err'); return; }
 
-    if (!resp.ok) {
-      const err = await resp.json();
-      if (err.message && err.message.includes('already exists')) {
-        showUploadMsg('文件已存在，请换一张图片', 'err');
-      } else {
-        showUploadMsg('上传失败: ' + (err.message || resp.status), 'err');
-      }
-      return;
-    }
+    // Update gallery.json
+    const gallery = await fetchGalleryJSON(token);
+    gallery.push({ file: filename, caption, time: new Date().toISOString().slice(0,10) });
+    await updateGalleryJSON(gallery, token, `📷 添加：${caption}`);
 
-    showUploadMsg('✓ 上传成功！约30秒后刷新页面可见', 'ok');
+    showMsg('uploadMsg', '✓ 上传成功！', 'ok');
     fileInput.value = '';
     document.getElementById('captionInput').value = '';
     document.getElementById('uploadPreview').style.display = 'none';
-
-    // Reload gallery after a delay for GitHub Pages to rebuild
-    setTimeout(loadGallery, 30000);
-
-  } catch (e) {
-    showUploadMsg('上传失败: ' + e.message, 'err');
-  }
+    setTimeout(loadGallery, 15000);
+  } catch (e) { showMsg('uploadMsg', '上传失败: ' + e.message, 'err'); }
 }
 
-function showUploadMsg(text, cls) {
-  const msg = document.getElementById('uploadMsg');
-  msg.textContent = text;
-  msg.className = 'msg msg-' + cls;
+// ── Manage list ──
+async function loadManageList() {
+  const token = sessionStorage.getItem('gh_token');
+  if (!token) return;
+  const list = document.getElementById('manageList');
+  list.innerHTML = '加载中…';
+  try {
+    const gallery = await fetchGalleryJSON(token);
+    if (!gallery.length) { list.innerHTML = '<div style="color:var(--muted);text-align:center;padding:20px;">暂无图片</div>'; return; }
+    list.innerHTML = gallery.map((item, i) => `
+      <div class="manage-item">
+        <img src="${RAW_BASE}/${IMAGE_DIR}/${item.file}" alt="${item.caption}">
+        <input type="text" value="${item.caption || ''}" placeholder="图片说明" id="cap_${i}" data-file="${item.file}">
+        <button class="btn-sm" onclick="saveCaption('${item.file}', ${i})">💾 保存</button>
+        <button class="btn-sm danger" onclick="deleteImage('${item.file}', ${i})">🗑 删除</button>
+      </div>
+    `).join('');
+    document.getElementById('manageMsg').textContent = '';
+  } catch (e) { list.innerHTML = '加载失败'; }
 }
 
-// ── Load gallery ──
+async function saveCaption(filename, index) {
+  const token = sessionStorage.getItem('gh_token');
+  const newCaption = document.getElementById(`cap_${index}`).value.trim();
+  try {
+    const gallery = await fetchGalleryJSON(token);
+    const item = gallery.find(i => i.file === filename);
+    if (item) item.caption = newCaption;
+    await updateGalleryJSON(gallery, token, `✏️ 修改说明：${filename}`);
+    showMsg('manageMsg', '✓ 已保存', 'ok');
+    setTimeout(loadGallery, 10000);
+  } catch (e) { showMsg('manageMsg', '保存失败: ' + e.message, 'err'); }
+}
+
+async function deleteImage(filename, index) {
+  if (!confirm('确定删除这张图片？此操作不可撤销。')) return;
+  const token = sessionStorage.getItem('gh_token');
+  try {
+    // Delete image file
+    const getResp = await fetch(`${API_BASE}/contents/${IMAGE_DIR}/${filename}`, { headers: { Authorization: `token ${token}` } });
+    const getData = await getResp.json();
+    await fetch(`${API_BASE}/contents/${IMAGE_DIR}/${filename}`, {
+      method: 'DELETE',
+      headers: { Authorization: `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `🗑 删除：${filename}`, sha: getData.sha, branch: 'main' })
+    });
+    // Remove from gallery.json
+    const gallery = await fetchGalleryJSON(token);
+    const updated = gallery.filter(i => i.file !== filename);
+    await updateGalleryJSON(updated, token, `🗑 删除：${filename}`);
+    showMsg('manageMsg', '✓ 已删除', 'ok');
+    loadManageList();
+    setTimeout(loadGallery, 10000);
+  } catch (e) { showMsg('manageMsg', '删除失败: ' + e.message, 'err'); }
+}
+
+// ── Load gallery (from gallery.json) ──
 async function loadGallery() {
   const gallery = document.getElementById('gallery');
-  const token = sessionStorage.getItem('gh_token');
-  const headers = token ? { Authorization: `token ${token}` } : {};
-  
   try {
-    const resp = await fetch(
-      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${IMAGE_DIR}`,
-      { headers }
-    );
-    
-    if (resp.status === 404) {
-      gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>';
-      return;
-    }
-    if (resp.status === 403) {
-      // Rate limit — fall back to pre-cached image URLs or show login prompt
-      gallery.innerHTML = '<div class="gallery-empty">加载受限，点右下角 🔒 登录后即可显示图片。</div>';
-      return;
-    }
-    if (!resp.ok) {
-      gallery.innerHTML = '<div class="gallery-empty">加载失败（HTTP ' + resp.status + '），请稍后再试。</div>';
-      return;
-    }
-
-    const files = await resp.json();
-    if (!Array.isArray(files) || files.length === 0) {
-      gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>';
-      return;
-    }
-
-    gallery.innerHTML = files
-      .filter(f => f.type === 'file' && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f.name))
-      .map(f => {
-        const caption = f.name.replace(/\.[^.]+$/, '').replace(/^\d+-[a-z0-9]+-?/, '');
-        return `<div class="gallery-item">
-          <a href="${f.download_url}" target="_blank"><img src="${f.download_url}" alt="${caption}" loading="lazy"></a>
-          <div class="caption">${caption || '未命名'}</div>
-        </div>`;
-      }).join('');
-
-  } catch (e) {
-    gallery.innerHTML = '<div class="gallery-empty">网络错误，请检查连接后刷新页面。</div>';
-  }
+    const resp = await fetch(`${RAW_BASE}/${GALLERY_JSON}`);
+    if (!resp.ok) { gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>'; return; }
+    const items = await resp.json();
+    if (!items.length) { gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>'; return; }
+    gallery.innerHTML = items.map(item => `
+      <div class="gallery-item">
+        <a href="${RAW_BASE}/${IMAGE_DIR}/${item.file}" target="_blank">
+          <img src="${RAW_BASE}/${IMAGE_DIR}/${item.file}" alt="${item.caption||''}" loading="lazy">
+        </a>
+        <div class="caption">${item.caption || '未命名'}</div>
+      </div>
+    `).join('');
+  } catch (e) { gallery.innerHTML = '<div class="gallery-empty">网络错误，请检查连接后刷新页面。</div>'; }
 }
 
 // ── Init ──
 loadGallery();
-if (sessionStorage.getItem('gh_token')) {
-  adminTrigger.classList.add('logged-in');
-}
+if (sessionStorage.getItem('gh_token')) { adminTrigger.classList.add('logged-in'); }
 </script>
 
 </body>
