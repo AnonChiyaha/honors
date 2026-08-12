@@ -491,6 +491,7 @@ async function adminLogin() {
 
     sessionStorage.setItem('gh_token', token);
     adminTrigger.classList.add('logged-in');
+    loadGallery();  // reload gallery with auth
     msg.className = 'msg msg-ok'; msg.textContent = `✓ 欢迎，${user.login}`;
     setTimeout(() => { loginPanel.style.display = 'none'; uploadPanel.style.display = 'block'; msg.textContent = ''; }, 800);
   } catch {
