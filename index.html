@@ -558,7 +558,7 @@ async function adminLogin() {
     if (user.login !== REPO_OWNER) { msg.className = 'msg msg-err'; msg.textContent = '此 Token 不是该仓库的所有者'; return; }
     sessionStorage.setItem('gh_token', token);
     adminTrigger.classList.add('logged-in');
-    loadGallery();
+    loadGalleryAuthed();
     msg.className = 'msg msg-ok'; msg.textContent = `✓ 欢迎，${user.login}`;
     setTimeout(() => { loginPanel.style.display = 'none'; adminPanel.style.display = 'block'; msg.textContent = ''; }, 600);
   } catch { msg.className = 'msg msg-err'; msg.textContent = 'Token 无效或网络错误'; }
@@ -648,7 +648,7 @@ async function uploadImage() {
     fileInput.value = '';
     document.getElementById('captionInput').value = '';
     document.getElementById('uploadPreview').style.display = 'none';
-    setTimeout(loadGallery, 15000);
+    loadGalleryAuthed();
   } catch (e) { showMsg('uploadMsg', '上传失败: ' + e.message, 'err'); }
 }
 
@@ -682,7 +682,7 @@ async function saveCaption(filename, index) {
     if (item) item.caption = newCaption;
     await updateGalleryJSON(gallery, token, `✏️ 修改说明：${filename}`);
     showMsg('manageMsg', '✓ 已保存', 'ok');
-    setTimeout(loadGallery, 10000);
+    loadGalleryAuthed();
   } catch (e) { showMsg('manageMsg', '保存失败: ' + e.message, 'err'); }
 }
 
@@ -704,27 +704,48 @@ async function deleteImage(filename, index) {
     await updateGalleryJSON(updated, token, `🗑 删除：${filename}`);
     showMsg('manageMsg', '✓ 已删除', 'ok');
     loadManageList();
-    setTimeout(loadGallery, 10000);
+    loadGalleryAuthed();
   } catch (e) { showMsg('manageMsg', '删除失败: ' + e.message, 'err'); }
 }
 
 // ── Load gallery (from gallery.json) ──
 async function loadGallery() {
   const gallery = document.getElementById('gallery');
+  const ts = Date.now();
   try {
-    const resp = await fetch(`${RAW_BASE}/${GALLERY_JSON}`);
+    const resp = await fetch(`${RAW_BASE}/${GALLERY_JSON}?t=${ts}`);
     if (!resp.ok) { gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>'; return; }
     const items = await resp.json();
     if (!items.length) { gallery.innerHTML = '<div class="gallery-empty">暂无建模图片，登录管理后台后可上传。</div>'; return; }
     gallery.innerHTML = items.map(item => `
       <div class="gallery-item">
-        <a href="${RAW_BASE}/${IMAGE_DIR}/${item.file}" target="_blank">
-          <img src="${RAW_BASE}/${IMAGE_DIR}/${item.file}" alt="${item.caption||''}" loading="lazy">
+        <a href="${RAW_BASE}/${IMAGE_DIR}/${item.file}?t=${ts}" target="_blank">
+          <img src="${RAW_BASE}/${IMAGE_DIR}/${item.file}?t=${ts}" alt="${item.caption||''}" loading="lazy">
         </a>
         <div class="caption">${item.caption || '未命名'}</div>
       </div>
     `).join('');
   } catch (e) { gallery.innerHTML = '<div class="gallery-empty">网络错误，请检查连接后刷新页面。</div>'; }
+}
+
+// Authed version: uses GitHub API (no CDN delay), requires login
+async function loadGalleryAuthed() {
+  const token = sessionStorage.getItem('gh_token');
+  if (!token) return loadGallery();
+  const gallery = document.getElementById('gallery');
+  try {
+    const items = await fetchGalleryJSON(token);
+    if (!items.length) { gallery.innerHTML = '<div class="gallery-empty">暂无建模图片。</div>'; return; }
+    const ts = Date.now();
+    gallery.innerHTML = items.map(item => `
+      <div class="gallery-item">
+        <a href="${RAW_BASE}/${IMAGE_DIR}/${item.file}?t=${ts}" target="_blank">
+          <img src="${RAW_BASE}/${IMAGE_DIR}/${item.file}?t=${ts}" alt="${item.caption||''}" loading="lazy">
+        </a>
+        <div class="caption">${item.caption || '未命名'}</div>
+      </div>
+    `).join('');
+  } catch (e) { loadGallery(); }
 }
 
 // ── Init ──
